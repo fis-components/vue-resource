@@ -1,6 +1,6 @@
 {
+    "version": "0.1.15",
     "repos": "https://github.com/vuejs/vue-resource",
-    "version": "0.1.13",
     "description": "Resource component for Vue.js",
     "name": "vue-resource",
     "main": "vue-resource.js",
