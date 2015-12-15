@@ -1,5 +1,5 @@
 /**
- * vue-resource v0.1.15
+ * vue-resource v0.1.17
  * https://github.com/vuejs/vue-resource
  * Released under the MIT License.
  */
@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["VueResource"] = factory();
 	else
@@ -76,13 +76,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        $url: {
 	            get: function () {
-	                return this._url || (this._url = _.options(Vue.url, this, this.$options.url));
+	                return _.options(Vue.url, this, this.$options.url);
 	            }
 	        },
 
 	        $http: {
 	            get: function () {
-	                return this._http || (this._http = _.options(Vue.http, this, this.$options.http));
+	                return _.options(Vue.http, this, this.$options.http);
 	            }
 	        },
 
@@ -195,6 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Service for URL templating.
 	 */
 
+	var ie = document.documentMode;
 	var el = document.createElement('a');
 
 	module.exports = function (_) {
@@ -285,6 +286,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 
 	    Url.parse = function (url) {
+
+	        if (ie) {
+	            el.href = url;
+	            url = el.href;
+	        }
 
 	        el.href = url;
 
@@ -519,10 +525,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var Promise = __webpack_require__(5);
+	var XDomain = window.XDomainRequest;
 
 	module.exports = function (_, options) {
 
 	    var request = new XMLHttpRequest(), promise;
+
+	    if (XDomain && options.crossOrigin) {
+	        request = new XDomainRequest(); options.headers = {};
+	    }
 
 	    if (_.isPlainObject(options.xhr)) {
 	        _.extend(request, options.xhr);
@@ -540,15 +551,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            request.setRequestHeader(header, value);
 	        });
 
-	        request.onreadystatechange = function () {
+	        var handler = function (event) {
 
-	            if (request.readyState === 4) {
+	            request.ok = event.type === 'load';
 
+	            if (request.ok && request.status) {
 	                request.ok = request.status >= 200 && request.status < 300;
-
-	                (request.ok ? resolve : reject)(request);
 	            }
+
+	            (request.ok ? resolve : reject)(request);
 	        };
+
+	        request.onload = handler;
+	        request.onabort = handler;
+	        request.onerror = handler;
 
 	        request.send(options.data);
 	    });
@@ -839,7 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function (_) {
 
-	    function Resource(url, params, actions) {
+	    function Resource(url, params, actions, options) {
 
 	        var self = this, resource = {};
 
@@ -850,7 +866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _.each(actions, function (action, name) {
 
-	            action = _.extend(true, {url: url, params: params || {}}, action);
+	            action = _.extend(true, {url: url, params: params || {}}, options, action);
 
 	            resource[name] = function () {
 	                return (self.$http || _.http)(opts(action, arguments));
