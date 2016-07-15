@@ -1,142 +1,47 @@
 # vue-resource [![npm package](https://img.shields.io/npm/v/vue-resource.svg)](https://www.npmjs.com/package/vue-resource)
 
-Resource plugin for Vue.js.
+The plugin for [Vue.js](http://vuejs.org) provides services for making web requests and handle responses using a [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) or JSONP.
 
-The plugin provides services for making web requests and handle responses using a XMLHttpRequest or JSONP.
+## Features
 
-## Setup
+- Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API and [URI Templates](https://medialize.github.io/URI.js/uri-template.html)
+- Supports [interceptors](docs/http.md#interceptors) for request and response
+- Supports latest Firefox, Chrome, Safari, Opera and IE9+
+- Compact size 12KB (4.5KB gzipped)
 
-### Webpack/Browserify
+## Installation
 
-Add `vue` and `vue-resource` to your `package.json`, then `npm install`, then add these lines in your code:
-
-```javascript
-var Vue = require('vue');
-
-Vue.use(require('vue-resource'));
+### NPM
+```
+$ npm install vue-resource
 ```
 
-### Configuration
-
-Set default values using the global configuration.
-
-```javascript
-Vue.http.options.root = '/root';
-Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
+### Bower
+```
+$ bower install vue-resource
 ```
 
-Set default values inside your Vue component options.
-
-```javascript
-new Vue({
-
-    http: {
-      root: '/root',
-      headers: {
-        Authorization: 'Basic YXBpOnBhc3N3b3Jk'
-      }
-    }
-
-})
+### CDN
+Available on [jsdelivr](https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js), [cdnjs](https://cdnjs.com/libraries/vue-resource) or [npmcdn](https://npmcdn.com/vue-resource@0.9.3/dist/vue-resource.min.js).
+```html
+<script src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js"></script>
 ```
 
-## HTTP
+## Documentation
 
-The http service can be used globally `Vue.http` or in a Vue instance `this.$http`.
+- [Configuration](docs/config.md)
+- [HTTP Requests/Response](docs/http.md)
+- [Creating Resources](docs/resource.md)
+- [Code Recipes](docs/recipes.md)
 
-### Methods
+## Changelog
 
-* `get(url, [data], [success], [options])`
-* `post(url, [data], [success], [options])`
-* `put(url, [data], [success], [options])`
-* `patch(url, [data], [success], [options])`
-* `delete(url, [data], [success], [options])`
-* `jsonp(url, [data], [success], [options])`
+Details changes for each release are documented in the [release notes](https://github.com/vuejs/vue-resource/releases).
 
-### Options
+## Contribution
 
-* **url** - `string` - URL to which the request is sent
-* **data** - `Object|string` - Data to be sent as the request message data
-* **method** - `string` - HTTP method (e.g. GET, POST, ...)
-* **params** - `Object` - Parameters object to be appended as GET parameters
-* **headers** - `Object` - Headers object to be sent as HTTP request headers
-* **success** - `function(data, status, request)` - Callback function to be called when the request finishes
-* **error** - `function(data, status, request)` - Callback function to be called when the request fails
-* **beforeSend** - `function(request, options)` - Callback function to modify the request object before it is sent
-* **emulateHTTP** - `boolean` - Send PUT, PATCH and DELETE requests with a HTTP POST and set the `X-HTTP-Method-Override` header
-* **emulateJSON** - `boolean` -  Send request data as `application/x-www-form-urlencoded` content type
-* **xhr** - `Object` - Parameters object to be set on the native XHR object
-* **jsonp** - `string` - Callback function name in a JSONP request
+If you find a bug or want to contribute to the code or documentation, you can help by submitting an [issue](https://github.com/vuejs/vue-resource/issues) or a [pull request](https://github.com/vuejs/vue-resource/pulls).
 
-### Example
+## License
 
-```javascript
-new Vue({
-
-    ready: function() {
-
-      // GET request
-      this.$http.get('/someUrl', function (data, status, request) {
-
-          // set data on vm
-          this.$set('someData', data)
-
-      }).error(function (data, status, request) {
-          // handle error
-      })
-
-    }
-
-})
-```
-
-## Resource
-
-The resource service can be used globally `Vue.resource` or in a Vue instance `this.$resource`.
-
-### Methods
-
-* `resource(url, [params], [actions], [options])`
-
-### Default Actions
-
-```javascript
-get: {method: 'GET'},
-save: {method: 'POST'},
-query: {method: 'GET'},
-update: {method: 'PUT'},
-remove: {method: 'DELETE'},
-delete: {method: 'DELETE'}
-```
-
-### Example
-```javascript
-new Vue({
-
-    ready: function() {
-
-      var resource = this.$resource('someItem/:id');
-
-      // get item
-      resource.get({id: 1}, function (item, status, request) {
-          this.$set('item', item)
-      })
-
-      // save item
-      resource.save({id: 1}, {item: this.item}, function (data, status, request) {
-          // handle success
-      }).error(function (data, status, request) {
-          // handle error
-      })
-
-      // delete item
-      resource.delete({id: 1}, function (data, status, request) {
-          // handle success
-      }).error(function (data, status, request) {
-          // handle error
-      })
-
-    }
-
-})
-```
+[MIT](http://opensource.org/licenses/MIT)
